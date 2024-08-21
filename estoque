@@ -1,0 +1,154 @@
+<?php
+
+// Definindo a estrutura do array para armazenar os produtos
+$produtos = [];
+
+// Função para adicionar um produto
+function adicionarProduto(&$produtos) {
+    echo "Digite o código do produto: ";
+    $codigo = intval(trim(fgets(STDIN)));
+    
+    echo "Digite o nome do produto: ";
+    $nome = trim(fgets(STDIN));
+    
+    echo "Digite a quantidade disponível no estoque: ";
+    $quantidade = intval(trim(fgets(STDIN)));
+    
+    echo "Digite o preço de venda: ";
+    $preco = floatval(trim(fgets(STDIN)));
+    
+    echo "Digite a descrição do produto: ";
+    $descricao = trim(fgets(STDIN));
+    
+    $produtos[] = [
+        'codigo' => $codigo,
+        'nome' => $nome,
+        'quantidade' => $quantidade,
+        'preco' => $preco,
+        'descricao' => $descricao
+    ];
+    
+    echo "Produto adicionado com sucesso!\n";
+}
+
+
+function encontrarProdutoMaiorPreco($produtos) {  // Função para encontrar o produto com o maior preço de venda
+    if (empty($produtos)) {
+        echo "Nenhum produto cadastrado.\n";
+        return;
+    }
+    
+    $produtoMaiorPreco = $produtos[0];
+    foreach ($produtos as $produto) {
+        if ($produto['preco'] > $produtoMaiorPreco['preco']) {
+            $produtoMaiorPreco = $produto;
+        }
+    }
+    
+    echo "Produto com o maior preço de venda:\n";
+    echo "Código: " . $produtoMaiorPreco['codigo'] . "\n";
+    echo "Nome: " . $produtoMaiorPreco['nome'] . "\n";
+    echo "Preço: R$ " . number_format($produtoMaiorPreco['preco'], 2, ',', '.') . "\n";
+}
+
+
+function encontrarProdutoMaiorQuantidade($produtos) { // Função para encontrar o produto com a maior quantidade disponível
+    if (empty($produtos)) {
+        echo "Nenhum produto cadastrado.\n";
+        return;
+    }
+    
+    $produtoMaiorQuantidade = $produtos[0];
+    foreach ($produtos as $produto) {
+        if ($produto['quantidade'] > $produtoMaiorQuantidade['quantidade']) {
+            $produtoMaiorQuantidade = $produto;
+        }
+    }
+    
+    echo "Produto com a maior quantidade disponível:\n";
+    echo "Código: " . $produtoMaiorQuantidade['codigo'] . "\n";
+    echo "Nome: " . $produtoMaiorQuantidade['nome'] . "\n";
+    echo "Quantidade: " . $produtoMaiorQuantidade['quantidade'] . "\n";
+}
+
+
+function encontrarProdutoPorCodigo($produtos, $codigo) { // Função para encontrar um produto através do código de identificação
+    foreach ($produtos as $produto) {
+        if ($produto['codigo'] == $codigo) {
+            return $produto;
+        }
+    }
+    return null;
+}
+
+
+function alterarPrecoProduto(&$produtos, $codigo, $novoPreco) { // Função para alterar o preço de venda de um produto
+    foreach ($produtos as &$produto) {
+        if ($produto['codigo'] == $codigo) {
+            $produto['preco'] = $novoPreco;
+            echo "Preço do produto alterado com sucesso!\n";
+            return;
+        }
+    }
+    echo "Produto não encontrado.\n";
+}
+
+
+function exibirMenu(&$produtos) {           // Função para exibir o menu e processar a escolha do usuário
+    while (true) {
+        echo "\nMenu:\n";
+        echo "1. Adicionar um produto\n";
+        echo "2. Encontrar o produto com maior preço de venda\n";
+        echo "3. Encontrar o produto com maior quantidade disponível no estoque\n";
+        echo "4. Encontrar produto através do seu código de identificação\n";
+        echo "5. Alterar preço de venda de um produto\n";
+        echo "6. Sair\n";
+        echo "Escolha uma opção: ";
+        
+        $opcao = intval(trim(fgets(STDIN)));
+        
+        switch ($opcao) {
+            case 1:
+                adicionarProduto($produtos);
+                break;
+            case 2:
+                encontrarProdutoMaiorPreco($produtos);
+                break;
+            case 3:
+                encontrarProdutoMaiorQuantidade($produtos);
+                break;
+            case 4:
+                echo "Digite o código do produto: ";
+                $codigo = intval(trim(fgets(STDIN)));
+                $produto = encontrarProdutoPorCodigo($produtos, $codigo);
+                if ($produto) {
+                    echo "Produto encontrado:\n";
+                    echo "Código: " . $produto['codigo'] . "\n";
+                    echo "Nome: " . $produto['nome'] . "\n";
+                    echo "Quantidade: " . $produto['quantidade'] . "\n";
+                    echo "Preço: R$ " . number_format($produto['preco'], 2, ',', '.') . "\n";
+                    echo "Descrição: " . $produto['descricao'] . "\n";
+                } else {
+                    echo "Produto não encontrado.\n";
+                }
+                break;
+            case 5:
+                echo "Digite o código do produto: ";
+                $codigo = intval(trim(fgets(STDIN)));
+                echo "Digite o novo preço de venda: ";
+                $novoPreco = floatval(trim(fgets(STDIN)));
+                alterarPrecoProduto($produtos, $codigo, $novoPreco);
+                break;
+            case 6:
+                echo "Saindo...\n";
+                exit;
+            default:
+                echo "Opção inválida. Tente novamente.\n";
+        }
+    }
+}
+
+
+exibirMenu($produtos);
+
+?>
